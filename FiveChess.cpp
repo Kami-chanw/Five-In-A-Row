@@ -1,6 +1,39 @@
 #include"FiveChess.h"
 using namespace std;
+FiveChess::FiveChess(GameModel model,Difficulty difficulty)
+{
+    //获取游戏模式、难度
+    this->model=model;
+    this->difficulty=difficulty;
+    //初始化棋盘
+    for(int i=0;i<chessboardSize;++i)
+    {
+        for(int j=0;j<chessboardSize;++j)
+        {
+            Map[i][j]=0;
+        }
+    }
+    //初始化骑手标识
+    playerFlag=true;
+}
 
+void FiveChess::setChess(int row,int col)
+{
+    if(Map[row][col]==0)
+    {
+        if(playerFlag)
+        {
+            Map[row][col]=1;}
+        else
+        {
+            Map[row][col]=-1;}
+        playerFlag=!playerFlag;
+    }
+    else{
+        //warning或者无效点击
+    }
+
+}
 bool FiveChess::isWin(int lastrow,int lastcol)
 {
    //原理：从刚才落子的位置判断，判断其4个方向上是否有五颗连续的同类棋子
@@ -51,4 +84,17 @@ bool FiveChess::isWin(int lastrow,int lastcol)
             return true;
    }
    return false;
+}
+
+bool FiveChess::isDead()
+{
+   for(int i=0;i<chessboardSize;++i)
+   {
+       for(int j=0;j<chessboardSize;++j)
+       {
+            if(Map[i][j]==1||Map[i][j]==-1)
+                return false;
+       }
+   }
+   return true;
 }
