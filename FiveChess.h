@@ -1,5 +1,5 @@
 
-#ifndef FIVECHESSL_H
+#ifndef FIVECHESS_H
 #define FIVECHESS_H
 #include<vector>
 using namespace std;
@@ -18,6 +18,11 @@ enum Difficulty
 {
 
 };
+struct Pos{
+    int row;
+    int col;
+    int chess;
+};
 
 const int chessboardSize=15;//还是可自定义，待定
 class FiveChess
@@ -27,7 +32,8 @@ public:
     ~FiveChess();
    //数据成员
     //Position：一种vector<vector<int>>Map;另一种struct Position{}; vector<Position>Map;
-    vector<vector<int>>Map;//空白为0，黑子1，白子-1
+    vector<Pos> Map;//保存棋盘情况
+    //vector<vector<int>> Map;//空白为0，黑子1，白子-1
     //游戏模式，游戏状态,游戏难度
     GameModel model;
     Condition condition;
@@ -47,8 +53,11 @@ public:
     //接受UI下棋信号和下棋方：获取光标点击信号
     //下棋，更新棋盘
     void setChess(int,int);
+    //获取最后一个棋子信息
+    Pos getLastPos();
     //判断游戏是否结束:横、竖、左斜、右斜四个方向
-    bool isWin(int,int);
+    bool isWin();
+    //悔棋操作
     //判断是否和棋
     bool isDead();
 
