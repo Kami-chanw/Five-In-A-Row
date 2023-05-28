@@ -6,6 +6,7 @@ Game::Game() {
 
 void Game::startGame(GameType type) {
     gameType = type;  // 选定游戏类型
+    gameMap.clear();
     clearGameMap();
     player = true;
 }
@@ -44,6 +45,11 @@ void Game::act_E(Position pos) {
     updateGameMap(pos);
 }
 bool Game::winOrNot(Position pos) {
+    if (coordinate.size()==10)
+    {
+        return true;
+    }
+
 }
 
 bool Game::deadOrNot() {
