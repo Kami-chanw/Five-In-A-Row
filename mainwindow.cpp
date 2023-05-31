@@ -15,7 +15,7 @@ const int gridSize = 48;          // 棋盘网格边长
 const int chessBoardMargin = 48;  // 页面边界距棋盘边缘空隙
 const int posRange = 24;          // 鼠标点击的最大模糊边界距离
 const int markSizeBefore = 8;     // 预期落子位置标记的边长
-const int markSizeAfter = 8;      // 当前落子标记的边长
+const int markSizeAfter = 10;      // 当前落子标记的边长
 const int aiChessDelay = 600;     // AI下棋前的思考时间
 
 MainWindow::MainWindow(QWidget* parent)
@@ -34,10 +34,24 @@ MainWindow::MainWindow(QWidget* parent)
     QMenu*   gameMenu = menuBar()->addMenu(tr("Game"));  // menuBar默认是存在的，直接加菜单就可以了
     QAction* actionPVP = new QAction("Person VS Person", this);
     connect(actionPVP, SIGNAL(triggered()), this, SLOT(initPVPGame()));
+
+    /*connect(actionPVP, &QAction::triggered, this,[&]{
+        gameType_=PVP;
+        game->gameStatus=ONGOING;
+        game->startGame(gameType_);
+        update();
+    });*/
+
     gameMenu->addAction(actionPVP);
 
     QAction* actionPVE = new QAction("Person VS Computer", this);
     connect(actionPVE, SIGNAL(triggered()), this, SLOT(initPVEGame()));
+    /*connect(actionPVE, &QAction::triggered, this, [&]{
+        gameType_=PVE;
+        game->gameStatus=ONGOING;
+        game->startGame(gameType_);
+    });*/
+
     gameMenu->addAction(actionPVE);
 
     // 初始化游戏
@@ -103,34 +117,60 @@ void MainWindow::paintEvent(QPaintEvent* event) {
             brush.setColor((Qt::black));
         else
             brush.setColor(Qt::white);
-        painter.setBrush(brush);
 
+        painter.setPen(pen);
         painter.drawRect(chessBoardMargin + gridSize * clickColPos - markSizeBefore / 2,
-                         chessBoardMargin + gridSize * clickRowPos - gridSize / 2, markSizeBefore, markSizeBefore);
+                         chessBoardMargin + gridSize * clickRowPos - markSizeBefore / 2, markSizeBefore, markSizeBefore);
     }
 
     // 绘制棋子
     for (int i = 0; i < chessBoardSize; i++) {
         for (int j = 0; j < chessBoardSize; j++) {
+            QPen pen;
             if (1 == game->gameMap[i][j]) {
+
+                pen.setColor(Qt::black);
+                painter.setPen(pen);
+                painter.drawEllipse(chessBoardMargin + gridSize * j - chessRadius, chessBoardMargin + gridSize * i - chessRadius,
+                                    chessRadius * 2, chessRadius * 2);
+
+
+
                 brush.setColor(Qt::black);
                 painter.setBrush(brush);
                 painter.drawEllipse(chessBoardMargin + gridSize * j - chessRadius, chessBoardMargin + gridSize * i - chessRadius,
                                     chessRadius * 2, chessRadius * 2);
+
+                //绘制当前棋子落子后红色标记
                 if (i == game->coordinate.rbegin()->getRowPos() && j == game->coordinate.rbegin()->getColPos()) {
-                    QPen pen;
+
                     pen.setColor(Qt::red);
                     painter.setPen(pen);
-                    painter.drawEllipse(chessBoardMargin + gridSize * j - chessRadius,
-                                        chessBoardMargin + gridSize * i - chessRadius, markSizeAfter, markSizeAfter);
+                    painter.drawEllipse(chessBoardMargin + gridSize * j - markSizeAfter/2,
+                                        chessBoardMargin + gridSize * i - markSizeAfter/2, markSizeAfter, markSizeAfter);
                 }
             }
 
             if (-1 == game->gameMap[i][j]) {
+                pen.setColor(Qt::black);
                 brush.setColor(Qt::white);
+
+                painter.setPen(pen);
+                painter.drawEllipse(chessBoardMargin + gridSize * j - chessRadius, chessBoardMargin + gridSize * i - chessRadius,
+                                    chessRadius * 2, chessRadius * 2);
+
                 painter.setBrush(brush);
                 painter.drawEllipse(chessBoardMargin + gridSize * j - chessRadius, chessBoardMargin + gridSize * i - chessRadius,
                                     chessRadius * 2, chessRadius * 2);
+
+                //绘制当前棋子落子后标记
+                if (i == game->coordinate.rbegin()->getRowPos() && j == game->coordinate.rbegin()->getColPos()) {
+                    QPen pen;
+                    pen.setColor(Qt::red);
+                    painter.setPen(pen);
+                    painter.drawEllipse(chessBoardMargin + gridSize * j - markSizeAfter/2,
+                                        chessBoardMargin + gridSize * i - markSizeAfter/2, markSizeAfter, markSizeAfter);
+                }
             }
         }
     }
@@ -155,6 +195,7 @@ void MainWindow::paintEvent(QPaintEvent* event) {
             if (btnValue == QMessageBox::Ok) {
                 game->startGame(gameType_);
                 game->gameStatus = ONGOING;
+
             }
         }
     }
