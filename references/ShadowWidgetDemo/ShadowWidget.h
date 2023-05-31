@@ -15,6 +15,8 @@
 #else
 #define GLOBAL_POS(e) e->globalPos()
 #endif
+#define CURSOR_HEIGHT 16
+#define CURSOR_WIDTH 16
 class QMainWindow;
 template <class Base>
 class ShadowWidget : public Base {
@@ -39,7 +41,6 @@ public:
     }
     ~ShadowWidget() {}
 
-public:
     int  shadowWidth() const { return _shadowWidth; }
     void setShadowWidth(int newShadowWidth) {
         if (_shadowWidth == newShadowWidth)
@@ -121,13 +122,13 @@ protected:
                     int    left, top, right, bottom;
                     origRect.getCoords(&left, &top, &right, &bottom);
                     if (testFlag(Top))
-                        top = mousePos.y();
+                        top = mousePos.y() - CURSOR_HEIGHT / 2;
                     if (testFlag(Left))
-                        left = mousePos.x();
+                        left = mousePos.x() - CURSOR_WIDTH / 2;
                     if (testFlag(Right))
-                        right = mousePos.x();
+                        right = mousePos.x() + CURSOR_WIDTH / 2;
                     if (testFlag(Bottom))
-                        bottom = mousePos.y();
+                        bottom = mousePos.y() + CURSOR_HEIGHT / 2;
 
                     QRect newRect(QPoint(left, top), QPoint(right, bottom));
 
@@ -160,7 +161,7 @@ protected:
         return QWidget::eventFilter(watched, event);
     }
 
-    void init(QLayout* content) {
+    void initShadowWidget(QLayout* content) {
         if constexpr (std::is_same_v<Base, QMainWindow>) {
             QWidget* window = new QWidget(_ptr->parentWidget());
             window->setLayout(_layout);
