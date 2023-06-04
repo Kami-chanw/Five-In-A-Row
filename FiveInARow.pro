@@ -10,15 +10,20 @@ CONFIG += c++17
 
 SOURCES += \
     Game.cpp \
+    Portrait.cpp \
     Position.cpp \
+    initialwindow.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    reversetime.cpp
 
 HEADERS += \
     Game.h \
+    Portrait.h \
     Position.h \
-    ShadowWidget.h \
-    mainwindow.h
+    initialwindow.h \
+    mainwindow.h \
+    reversetime.h
 
 FORMS += \
     mainwindow.ui

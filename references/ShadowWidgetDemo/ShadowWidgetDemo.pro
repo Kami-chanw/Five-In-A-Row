@@ -11,12 +11,12 @@ CONFIG += c++17
 SOURCES += \
     TitleBar.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
 
 HEADERS += \
     ShadowWidget.h \
     TitleBar.h \
-    mainwindow.h
+    mainwindow.h \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -26,4 +26,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 FORMS +=
 
 RESOURCES += \
-    ShadowWidgetDemo.qrc
+    ShadowWidgetDemo.qrc \

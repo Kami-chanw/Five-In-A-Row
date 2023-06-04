@@ -12,9 +12,9 @@ class Portrait:public QWidget
     Q_OBJECT
 
 public:
-    Portrait(QWidget*);
+    Portrait(QWidget* parent =nullptr);
 
-private:
+
     QLabel*image;
 
 };
