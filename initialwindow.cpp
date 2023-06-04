@@ -31,7 +31,7 @@ InitialWindow::InitialWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::
     inforLabel->setFont(titleFont);
     inforLabel->setText("五子棋");
     noteLabel->setFont(noteFont);
-    noteLabel->setText("Studing Everyday University");
+    noteLabel->setText("                                 SEU\nStuding Everyday University");
 
     pvpbutton->setFont(buttonFont);
     pvebutton->setFont(buttonFont);
