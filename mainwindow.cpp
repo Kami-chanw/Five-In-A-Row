@@ -10,24 +10,34 @@
 #include <math.h>
 #include<QHBoxLayout>
 #include<QVBoxLayout>
+
+#include"Portrait.h"
+#include"reversetime.h"
+#include"Game.h"
+#include "chessboardwidget.h"
+#include "initialwindow.h"
+
 // #include "ui_mainwindow.h"
 
-const int chessRadius = 16;       // 棋子半径
+const int chessRadius = 20;       // 棋子半径
 const int gridSize = 48;          // 棋盘网格边长
 const int chessBoardMargin = 48;  // 页面边界距棋盘边缘空隙
-const int posRange = 24;          // 鼠标点击的最大模糊边界距离
+/*const int posRange = 24;          // 鼠标点击的最大模糊边界距离
 const int markSizeBefore = 12;     // 预期落子位置标记的边长
-const int markSizeAfter = 10;      // 当前落子标记的边长
-const int aiChessDelay = 600;     // AI下棋前的思考时间
+const int markSizeAfter = 12;      // 当前落子标记的边长
+const int aiChessDelay = 600;     // AI下棋前的思考时间*/
+const int pSize=60;
+const int counterdownLength=120;
+const int counterdownWidth=60;
 
-MainWindow::MainWindow(QWidget* parent)
+MainWindow::MainWindow(GameType game_type,QWidget* parent)
     : QMainWindow(parent)
 //, ui(new Ui::MainWindow)
 {
     // ui->setupUi(this);
 
     // 设置棋盘界面大小
-    setFixedSize(chessBoardMargin * 2 + gridSize * chessBoardSize, chessBoardMargin * 2 + gridSize * chessBoardSize);
+    setFixedSize(chessBoardMargin * 4 + gridSize * chessBoardSize, chessBoardMargin * 4 + gridSize * chessBoardSize);
 
     // 设置鼠标追踪功能
     setMouseTracking(true);
@@ -69,25 +79,42 @@ MainWindow::MainWindow(QWidget* parent)
 
 
     //添加棋盘上方玩家头像(失败的尝试）
-    /*QVBoxLayout *layoutA=new QVBoxLayout;
-    Portrait* playerPortrait=new Portrait;
-    playerPortrait->image->move(chessBoardMargin,(chessBoardMargin-playerPortrait->image->height())/2);
-    layoutA->addWidget(playerPortrait->image,0,Qt::AlignLeft);
-    this->setLayout(layoutA);*/
+    QVBoxLayout *layoutA=new QVBoxLayout;
+    QHBoxLayout *layoutB=new QHBoxLayout;
+    Portrait* playerPortrait1=new Portrait;
+    Portrait* playerPortrait2=new Portrait;
+    chessBoard=new ChessBoardWidget(game_type);
+    reversetime* countdownTimer=new reversetime;
+
+    playerPortrait1->setFixedSize( pSize, pSize );
+    playerPortrait2->setFixedSize(pSize, pSize);
+    countdownTimer->setFixedSize(counterdownLength,counterdownWidth);
+
+    chessBoard->setFixedSize(chessBoardMargin*2 + gridSize * chessBoardSize, chessBoardMargin*2  + gridSize * chessBoardSize);
+
+    layoutB->addWidget(playerPortrait1,0,Qt::AlignLeft);
+    layoutB->addWidget(countdownTimer,0,Qt::AlignHCenter);
+    layoutB->addWidget(playerPortrait2,0,Qt::AlignRight);
+    layoutA->addLayout(layoutB,Qt::AlignTop);
+    layoutA->addWidget(chessBoard,0,Qt::AlignCenter);
+
+    QWidget* centerWidget=new QWidget;
+    centerWidget->setLayout(layoutA);
+    this->setCentralWidget(centerWidget);
     //addWidget(playerPortrait->image)
 
     // 初始化游戏
-    initGame();
+    //initGame();
 }
 
 MainWindow::~MainWindow() {
-    if (game) {
-        delete game;
-        game = nullptr;  // 对game(ptr)置空
+    if (chessBoard->game) {
+        delete chessBoard->game;
+        chessBoard->game = nullptr;  // 对game(ptr)置空
     }
     // delete ui;
 }
-
+/*
 void MainWindow::initGame() {
     // 初始化游戏模型
     game = new Game;
@@ -313,7 +340,7 @@ void MainWindow::playOneChess_E() {
         // 重绘页面
         update();
     }
-}
+}*/
 
 void MainWindow::returnPage(){
     InitialWindow* lastPage=new InitialWindow;

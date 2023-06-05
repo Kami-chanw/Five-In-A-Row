@@ -11,8 +11,9 @@ class reversetime:public QWidget
     Q_OBJECT
 
 public :
-    reversetime(QWidget*);
+    reversetime(QWidget* parent=nullptr);
     void onTimeout();
+private slots:
     void clickOnButton();
 private:
     QLCDNumber *lcd;

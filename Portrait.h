@@ -13,8 +13,10 @@ class Portrait:public QWidget
 
 public:
     Portrait(QWidget* parent =nullptr);
+    const QLabel* images() const ;
 
 
+private:
     QLabel*image;
 
 };

@@ -12,6 +12,7 @@ SOURCES += \
     Game.cpp \
     Portrait.cpp \
     Position.cpp \
+    chessboardwidget.cpp \
     initialwindow.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -21,6 +22,7 @@ HEADERS += \
     Game.h \
     Portrait.h \
     Position.h \
+    chessboardwidget.h \
     initialwindow.h \
     mainwindow.h \
     reversetime.h
@@ -32,3 +34,10 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    Five-In-A-Row-resourses.qrc
+
+DISTFILES += \
+    imag/R-C.jpg \
+    imgs/R-C.jpg

@@ -22,7 +22,7 @@ reversetime::reversetime(QWidget *parent)
     connect(startbutton,SIGNAL(clicked(bool)),this,SLOT(clickOnButton()));
 
 
-    this->resize(400,200);
+    //this->resize(400,200);
     this->setWindowFlag(Qt::WindowStaysOnTopHint);
     //this->setWindowFlags(Qt::Widget | Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowStaysOnTopHint);
 }

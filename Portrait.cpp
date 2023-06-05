@@ -4,12 +4,13 @@
 #include <QPixmap>
 #include <QString>
 
+const int portraitSize=60;
 Portrait::Portrait(QWidget* parent) : QWidget(parent) {
     // 载入图片
     image = new QLabel(this);
 //    image->setFixedSize(size().shrunkBy(QMargins(2,2,2,2)));
-    image->setFixedSize(32,32);//设置图片尺寸
-    QString path = "://imgs/OIP-C.jpg";
+    image->setFixedSize(portraitSize,portraitSize);//设置图片尺寸
+    QString path = ":/imgs/R-C.jpg";
     QPixmap pixmap(path);
     pixmap = pixmap.scaled(image->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
@@ -29,3 +30,8 @@ Portrait::Portrait(QWidget* parent) : QWidget(parent) {
     // 绘制到label
     image->setPixmap(img);
 }
+
+const QLabel* Portrait::images() const  {
+    return image;
+}
+

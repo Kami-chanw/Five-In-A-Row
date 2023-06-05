@@ -2,6 +2,8 @@
 #include "initialwindow.h"
 #include "ui_mainwindow.h"
 #include"mainwindow.h"
+#include"chessboardwidget.h"
+#include"Game.h"
 
 #include <QHBoxLayout>
 #include <QLabel>
@@ -40,12 +42,12 @@ InitialWindow::InitialWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::
 
     //同一个SIGNAL可以绑定多个SLOT：
     //实现点击pvpButton的同时跳转页面并初始化本地双人对战游戏
-    connect(pvpbutton,SIGNAL(clicked()),SLOT(jumpPage()));
-    connect(pvpbutton,SIGNAL(clicked()),SLOT(initPVPGame));
+    connect(pvpbutton,SIGNAL(clicked()),this,SLOT(jumpPagePVP()));
+    //connect(pvpbutton,SIGNAL(clicked()),this,SLOT(initPVPGame()));
 
     //实现点击pveButton的同时跳转页面并初始化人机对战游戏；
-    connect(pvebutton,SIGNAL(clicked()),SLOT(jumpPage()));
-    connect(pvebutton,SIGNAL(clicked()),SLOT(initPVEGame()));
+    connect(pvebutton,SIGNAL(clicked()),SLOT(jumpPagePVE()));
+    //connect(pvebutton,SIGNAL(clicked()),SLOT(initPVEGame()));
 
     //设置标题“五子棋”的布局为垂直布局
     QVBoxLayout* cmdLayout = new QVBoxLayout;
@@ -78,13 +80,23 @@ InitialWindow::InitialWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::
     //nextwidget->show();
 }
 
-void InitialWindow::jumpPage()
+void InitialWindow::jumpPagePVP()
 {
-    MainWindow* nextPage=new MainWindow;
+
+    MainWindow* nextPage=new MainWindow(PVP);
     this->close();
     nextPage->show();
 
 }
+void InitialWindow::jumpPagePVE()
+{
+
+    MainWindow* nextPage=new MainWindow(PVE);
+    this->close();
+    nextPage->show();
+
+}
+
 
 InitialWindow::~InitialWindow() {
     delete ui;
