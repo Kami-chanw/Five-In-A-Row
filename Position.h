@@ -1,21 +1,20 @@
 
 #ifndef POSITION_H
 #define POSITION_H
-
-
-
-
-class Position
-{
+class Position {
 public:
-    Position(int,int);
+    Position(int, int, int = 0);
     void setRowPos(int);
     void setColPos(int);
-    int getRowPos();
-    int getColPos();
+    void setScore(int);
+    int  getRowPos();
+    int  getColPos();
+    int  getScore();
+
 private:
     int rowPos;
     int colPos;
+    int score;
 };
 
-#endif // POSITION_H
+#endif  // POSITION_H
