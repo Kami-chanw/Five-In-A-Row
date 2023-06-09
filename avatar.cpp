@@ -32,8 +32,8 @@ Avatar::Avatar(QWidget* parent, LabelPosition pos, const QImage& img, const QStr
     //        layout->verticalSpacing();
     avatar->setFixedSize(QSize(avatarHeight, avatarHeight));
     setLayout(layout);
-    // init data
 
+    // init data
     timer.setInterval(interval);
     connect(&timer, &QTimer::timeout, this, [=] {
         this->currentTime -= interval;

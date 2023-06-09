@@ -20,11 +20,11 @@
 // #include "ui_mainwindow.h"
 
 const static QTime  defaultTotalTime(0, 5, 0);
-const static size_t defaultSingleTime = 15000;
+const static size_t defaultSingleTime = 12000;
 
 MainWindow::MainWindow(QWidget* parent) : ShadowWidget<QMainWindow>(parent) {
     // init window
-    setFixedSize(QSize(900, 680));
+    setFixedSize(QSize(840, 700));
     QGridLayout* mainLayout = new QGridLayout;
 
     static auto gameOverHandler = [=](const QString& str) {

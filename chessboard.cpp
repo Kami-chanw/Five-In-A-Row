@@ -13,8 +13,8 @@
 #include <math.h>
 
 const int cellSize         = 32;               // 棋盘网格边长
-const int chessRadius      = cellSize * 0.45;  // 棋子半径
-const int chessBoardMargin = 36;               // 页面边界距棋盘边缘空隙
+const int chessRadius      = cellSize * 0.42;  // 棋子半径
+const int chessBoardMargin = 24;               // 页面边界距棋盘边缘空隙
 const int posRange         = cellSize / 2;     // 鼠标点击的最大模糊边界距离
 const int markSizeBefore   = 8;                // 预期落子位置标记的边长
 const int markSizeAfter    = 4;                // 当前落子标记的边长

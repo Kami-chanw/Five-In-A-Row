@@ -1,8 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>xicons/close.svg</file>
-        <file>xicons/maximize.svg</file>
-        <file>xicons/minimize.svg</file>
-        <file>xicons/restore.svg</file>
-    </qresource>
-</RCC>

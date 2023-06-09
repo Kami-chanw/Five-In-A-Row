@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
         d.show();
         m.hide();
       });
-    m.show();
+    d.show();
 
     return app.exec();
 }

@@ -32,15 +32,16 @@ void AvatarWidget::paintEvent(QPaintEvent* event) {
         QSize(drawRect.width() - _progressBarWidth, drawRect.height() - _progressBarWidth));
     imageRect.moveCenter(drawRect.center());
     QRegion imageRegion(imageRect, QRegion::Ellipse);
-
     QPainterPath clipPath;
     clipPath.addEllipse(imageRect);
     p.setClipPath(clipPath);
     p.drawImage(imageRect, _avatar);
     p.setClipping(false);
+
     QPainterPath outterCircle;
     outterCircle.addRegion(QRegion(drawRect, QRegion::Ellipse).subtracted(imageRegion));
     p.fillPath(outterCircle, Qt::white);
+
     int  angle        = progress() * 360;
     auto currentIndex = (1.0 - progress()) * _colorMap.size();
     p.setBrush(interpolateColor(
