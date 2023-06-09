@@ -9,16 +9,37 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+#    FiveChess.cpp \
+    Game.cpp \
+    Position.cpp \
+    TitleBar.cpp \
+    avatar.cpp \
+    avatarwidget.cpp \
+    chessboard.cpp \
+    initialform.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
+#    FiveChess.h \
+    Game.h \
+    Position.h \
+    ShadowWidget.h \
+    TitleBar.h \
+    avatar.h \
+    avatarwidget.h \
+    chessboard.h \
+    initialform.h \
     mainwindow.h
 
+
 FORMS += \
-    mainwindow.ui
+    initialform.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    resourses.qrc
