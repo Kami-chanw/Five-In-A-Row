@@ -248,7 +248,6 @@ bool TitleBar::eventFilter(QObject* watched, QEvent* event) {
         return true;
     case QEvent::Paint: {
         QStyleOption opt;
-
         opt.initFrom(this);
         QPainter p(this);
         style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);

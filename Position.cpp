@@ -1,26 +1,12 @@
 #include "Position.h"
 
-Position::Position(int row, int col)
-{
-    setRowPos(row);
-    setColPos(col);
-}
+void Position::setRow(int r) { rowPos = r; }
 
-void Position::setRowPos(int r)
-{
-    rowPos = r;
-}
+void Position::setCol(int c) { colPos = c; }
 
-void Position::setColPos(int c)
-{
-    colPos = c;
-}
-
-int Position::getRowPos()
-{
+int Position::row() const {
     return rowPos;  // 返回横坐标
 }
-int Position::getColPos()
-{
+int Position::col() const {
     return colPos;  // 返回棋子纵坐标
 }

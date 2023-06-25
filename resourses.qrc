@@ -6,6 +6,8 @@
         <file>xicons/maximize.svg</file>
         <file>xicons/minimize.svg</file>
         <file>xicons/restore.svg</file>
+        <file>imgs/mainwnd_chessstar.svg</file>
+        <file>imgs/mainwnd_dead.svg</file>
     </qresource>
     <qresource prefix="/img"/>
 </RCC>

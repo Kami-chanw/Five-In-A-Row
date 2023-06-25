@@ -2,6 +2,8 @@
 #define GAME_H
 #include "Position.h"
 #include <vector>
+#include <array>
+
 enum class Status { OnGoing, Win, Dead };
 enum class GameType { PVP, PVE };
 /* enum Difficulty {
@@ -52,24 +54,21 @@ private:
     void calculateScore();  // 评分计算（不同棋形对应不同评分），便于AI根据评分思考
     Position getBestChess();  // 评分中找到最大分数位置
 public:                       // 接口函数：
-    Game();
+    Game(GameType type);
     ~Game();
-    // 开始游戏,初始化，获取游戏模式
-    void startGame(GameType);
+    void startGame();
     // void setDifficulty();
-    // 接受UI下棋信号和下棋方：获取光标点击信号
-    // 下棋，更新棋盘
     void updateGameMap(Position);
 
     bool isBlackPlay() const { return player; }
 
     Piece chessAt(int row, int col) { return gameMap[row][col]; }
-    Piece chessAt(Position pos) { return gameMap[pos.getRowPos()][pos.getColPos()]; }
+    Piece chessAt(Position pos) { return gameMap[pos.row()][pos.col()]; }
     void  setChessAt(Position pos, Piece chess) {
-         gameMap[pos.getRowPos()][pos.getColPos()] = chess;
+         gameMap[pos.row()][pos.col()] = chess;
     }
     void act_P(Position pos);  // 人下棋
-    void act_E();  // AI下棋
+    void act_E();              // AI下棋
 
     void     setGameStatus(Status status) { gameStatus = status; }
     Status   getGameStatus() const { return gameStatus; }
@@ -84,7 +83,7 @@ public:                       // 接口函数：
     bool     isWhiteAt(int row, int col) { return chessAt(row, col) == Piece::White; }
     bool     isBlackAt(int row, int col) { return chessAt(row, col) == Piece::Black; }
 
-    bool isWin();  // 判断游戏是否结束:横、竖、左斜、右斜四个方向
+    std::pair<bool, std::array<Position, 5>> isWin();  // 判断游戏是否结束:横、竖、左斜、右斜四个方向
     // 悔棋操作??待实现
     bool isDead();  // 判断是否和棋
 };

@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui quickwidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -13,7 +13,6 @@ SOURCES += \
     Game.cpp \
     Position.cpp \
     TitleBar.cpp \
-    avatar.cpp \
     avatarwidget.cpp \
     chessboard.cpp \
     initialform.cpp \
@@ -26,7 +25,6 @@ HEADERS += \
     Position.h \
     ShadowWidget.h \
     TitleBar.h \
-    avatar.h \
     avatarwidget.h \
     chessboard.h \
     initialform.h \

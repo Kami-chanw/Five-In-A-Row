@@ -1,28 +1,24 @@
 #include "Game.h"
 #include <cstdlib>
 #include <ctime>
+#include <functional>
 #include <vector>
-Game::Game() { srand(time(0)); }
+Game::Game(GameType type) {
+    gameType = type;
+    srand(time(0));
+}
 Game::~Game() {}
 
-void Game::startGame(GameType type) {
-    // 获取游戏模式
-    gameType = type;
+void Game::startGame() {
     // this->difficulty=difficulty;
     // 初始化棋盘
+    player = true;  // always black first
     clearMap(gameMap, scoreMap);
 }
 
 void Game::updateGameMap(Position pos) {
-
-    if (isEmptyAt(pos))  // 判断是否为空
-    {
-        if (player) {
-            setChessAt(pos, Piece::Black);
-        }
-        else {
-            setChessAt(pos, Piece::White);
-        }
+    if (isEmptyAt(pos)) {
+        setChessAt(pos, isBlackPlay() ? Piece::Black : Piece::White);
         player = !player;
         coordinate.push_back(pos);
     }
@@ -32,58 +28,61 @@ void Game::act_P(Position pos) { updateGameMap(pos); }
 void Game::act_E() { updateGameMap(getBestChess()); }
 
 Position Game::getLastPos() { return coordinate.back(); }
-bool     Game::isWin() {
-        int lastrow = getLastPos().getRowPos();
-        int lastcol = getLastPos().getColPos();
-        // 原理：从刚才落子的位置判断，判断其4个方向上是否有五颗连续的同类棋子
-        // 水平方向:左0右+4，左-1右+3，左-2右+2，左-3右+1，左-4右0
 
+std::pair<bool, std::array<Position, 5>> Game::isWin() {
+    int lastrow = getLastPos().row();
+    int lastcol = getLastPos().col();
+
+    const std::array<std::function<std::array<Position, 5>(int)>, 4> candidateArrFuncs = {
+        // horizontal
+        [=](int i) {
+            return std::array<Position, 5>{ Position{ lastrow, lastcol - i },
+                                            Position{ lastrow, lastcol - i + 1 },
+                                            Position{ lastrow, lastcol - i + 2 },
+                                            Position{ lastrow, lastcol - i + 3 },
+                                            Position{ lastrow, lastcol - i + 4 } };
+        },
+        // vertical
+        [=](int i) {
+            return std::array<Position, 5>{ Position{ lastrow - i, lastcol },
+                                            Position{ lastrow - i + 1, lastcol },
+                                            Position{ lastrow - i + 2, lastcol },
+                                            Position{ lastrow - i + 3, lastcol },
+                                            Position{ lastrow - i + 4, lastcol } };
+        },
+        // left diagonal line (/)
+        [=](int i) {
+            return std::array<Position, 5>{ Position{ lastrow + i, lastcol - i },
+                                            Position{ lastrow + i - 1, lastcol - i + 1 },
+                                            Position{ lastrow + i - 2, lastcol - i + 2 },
+                                            Position{ lastrow + i - 3, lastcol - i + 3 },
+                                            Position{ lastrow + i - 4, lastcol - i + 4 } };
+        },
+        // right diagonal line(\)
+        [=](int i) {
+            return std::array<Position, 5>{ Position{ lastrow - i, lastcol - i },
+                                            Position{ lastrow - i + 1, lastcol - i + 1 },
+                                            Position{ lastrow - i + 2, lastcol - i + 2 },
+                                            Position{ lastrow - i + 3, lastcol - i + 3 },
+                                            Position{ lastrow - i + 4, lastcol - i + 4 } };
+        }
+    };
+    for (auto& gen : candidateArrFuncs) {
         for (int i = 0; i < 5; i++) {
-            if (lastcol - i >= 0 && lastcol - i + 4 <= chessBoardSize
-            && gameMap[lastrow][lastcol - i] == gameMap[lastrow][lastcol - i + 1]
-            && gameMap[lastrow][lastcol - i] == gameMap[lastrow][lastcol - i + 2]
-            && gameMap[lastrow][lastcol - i] == gameMap[lastrow][lastcol - i + 3]
-            && gameMap[lastrow][lastcol - i] == gameMap[lastrow][lastcol - i + 4]) {
+            auto&& candidatePos = gen(i);
+            if (candidatePos.front().isValid(chessBoardSize)
+                && candidatePos.back().isValid(chessBoardSize)
+                && std::all_of(candidatePos.begin(), candidatePos.end(),
+                               [=, &candidatePos](const Position b) {
+                                   return chessAt(candidatePos.front()) == chessAt(b);
+                               })) {
                 gameStatus = Status::Win;
-                return true;
+                return { true, std::move(candidatePos) };
+            }
         }
     }
-        // 竖直方向
-        for (int i = 0; i < 5; i++) {
-            if (lastrow - i >= 0 && lastrow - i + 4 <= chessBoardSize
-            && gameMap[lastrow - i][lastcol] == gameMap[lastrow - i + 1][lastcol]
-            && gameMap[lastrow - i][lastcol] == gameMap[lastrow - i + 2][lastcol]
-            && gameMap[lastrow - i][lastcol] == gameMap[lastrow - i + 3][lastcol]
-            && gameMap[lastrow - i][lastcol] == gameMap[lastrow - i + 4][lastcol]) {
-                gameStatus = Status::Win;
-                return true;
-        }
-    }
-        //  /方向
-        for (int i = 0; i < 5; i++) {
-            if (lastrow + i < chessBoardSize && lastrow + i - 4 >= 0 && lastcol - i >= 0
-            && lastcol - i + 4 < chessBoardSize
-            && gameMap[lastrow + i][lastcol - i] == gameMap[lastrow + i - 1][lastcol - i + 1]
-            && gameMap[lastrow + i][lastcol - i] == gameMap[lastrow + i - 2][lastcol - i + 2]
-            && gameMap[lastrow + i][lastcol - i] == gameMap[lastrow + i - 3][lastcol - i + 3]
-            && gameMap[lastrow + i][lastcol - i] == gameMap[lastrow + i - 4][lastcol - i + 4]) {
-                gameStatus = Status::Win;
-                return true;
-        }
-    }
-        // \方向
-        for (int i = 0; i < 5; i++) {
-            if (lastrow - i < chessBoardSize && lastrow - i - 4 >= 0 && lastcol - i >= 0
-            && lastcol - i + 4 < chessBoardSize
-            && gameMap[lastrow - i][lastcol - i] == gameMap[lastrow - i + 1][lastcol - i + 1]
-            && gameMap[lastrow - i][lastcol - i] == gameMap[lastrow - i + 2][lastcol - i + 2]
-            && gameMap[lastrow - i][lastcol - i] == gameMap[lastrow - i + 3][lastcol - i + 3]
-            && gameMap[lastrow - i][lastcol - i] == gameMap[lastrow - i + 4][lastcol - i + 4]) {
-                gameStatus = Status::Win;
-                return true;
-        }
-    }
-        return false;
+
+    return { false, {} };
 }
 
 bool Game::isDead() {

@@ -1,27 +1,25 @@
 #ifndef INITIALFORM_H
 #define INITIALFORM_H
 
-#include <QDialog>
 #include "Game.h"
 #include "ShadowWidget.h"
+#include <QDialog>
 
 namespace Ui {
-  class InitialForm;
+    class InitialForm;
 }
 
-class InitialForm : public ShadowWidget<QWidget>
-{
-  Q_OBJECT
+class InitialForm : public ShadowWidget<QWidget> {
+    Q_OBJECT
 
 public:
-  explicit InitialForm(QWidget *parent = nullptr);
-  ~InitialForm();
-
-signals:
-  void showMainWindow(GameType);
+    explicit InitialForm(QWidget* parent = nullptr);
+    ~InitialForm();
 
 private:
-  Ui::InitialForm *ui;
+    Ui::InitialForm* ui;
+
+    void showMainWindow(GameType type);
 };
 
-#endif // INITIALFORM_H
+#endif  // INITIALFORM_H

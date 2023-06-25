@@ -7,25 +7,26 @@
 
 class Game;
 class ChessBoard;
-class Avatar;
+class AvatarWidget;
 
 class MainWindow : public ShadowWidget<QMainWindow> {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget* parent = nullptr);
+    MainWindow(GameType type, QWidget* parent = nullptr);
     ~MainWindow();
 
 signals:
     void showInitialForm();
 
+protected:
+    void closeEvent(QCloseEvent* event) override;
 
 private:
     ChessBoard* chessBoard = nullptr;
-    Avatar* playerA,*playerB;
+    AvatarWidget* playerA,*playerB;
 
-public:
-    void initGame(GameType);
+    void initGame();
 };
 
 

@@ -69,7 +69,6 @@ private:
     QPoint       offset;
     QWidget*     parentWidget;
 
-    // QObject interface
 public:
     bool eventFilter(QObject* watched, QEvent* event) override;
 };
