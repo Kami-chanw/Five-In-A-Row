@@ -15,8 +15,11 @@ class AvatarWidget : public QWidget {
 public:
     enum LabelPosition { Left, Right };
     enum AvatarType { Normal, Dead };
+    Q_ENUM(LabelPosition);
+    Q_ENUM(AvatarType);
+
     AvatarWidget(QWidget* parent, LabelPosition pos, const QImage& img, const QString& name = "",
-           QTime totalTime = QTime(), size_t singleTime = 0);
+                 QTime totalTime = QTime(), size_t singleTime = 0);
 
     QString name() const;
     void    setName(const QString& str);
@@ -36,7 +39,7 @@ signals:
     void timeout();
 
 protected:
-    void paintEvent(QPaintEvent* event);
+    void paintEvent(QPaintEvent* event) override;
 
 private:
     QWidget*     avatar;
@@ -48,15 +51,16 @@ private:
     const size_t singleTime;
     QTimer       timer;
 
-    qreal               progress;
-    QImage              avatarImage;
-    QImage              deadImage;
-    QImage              currentAvatar;
-    QPropertyAnimation* progressBarColorAnim;
-    QPropertyAnimation* avatarBlinkAnim;
+    qreal                      progress;
+    QImage                     avatarImage;
+    QImage                     deadImage;
+    QImage                     currentAvatar;
+    QSequentialAnimationGroup* progressBarColorAnim;
+    QPropertyAnimation*        fadeAnim;
+    QPropertyAnimation*        avatarBlinkAnim;
 
-    static constexpr int progressBarWidth = 6;
-    static constexpr int interval         = 10;
+    static constexpr int progressBarWidth = 5;
+    static constexpr int interval         = 10;  // ms
 };
 
 #endif  // AVATARWIDGET_H

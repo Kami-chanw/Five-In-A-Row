@@ -1,10 +1,11 @@
-#include <QtWidgets>
 #include "initialform.h"
+#include "mainwindow.h"
+#include <QtWidgets>
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
-    InitialForm d;
-    d.show();
+    InitialForm w;
+    w.show();
 
     return app.exec();
 }

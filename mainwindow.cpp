@@ -1,29 +1,25 @@
 #include "mainwindow.h"
-#include <QAction>
-#include <QDebug>
+#include "avatarwidget.h"
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QSpacerItem>
+#include <QTime>
 #include <QTimer>
 #include <QVBoxLayout>
 #include <math.h>
 
-#include "Game.h"
-#include "avatarwidget.h"
-#include "chessboard.h"
-#include <QSpacerItem>
-#include <QTime>
-
 const static QTime  defaultTotalTime(0, 5, 0);
 const static size_t defaultSingleTime = 12000;
 
-MainWindow::MainWindow(GameType type, QWidget* parent) : ShadowWidget<QMainWindow>(parent) {
+MainWindow::MainWindow(GameType type, QWidget* parent)
+    : ShadowWidget<QMainWindow>(parent) {
     // init window
     setFixedSize(QSize(840, 700));
-    QGridLayout* mainLayout = new QGridLayout;
-    static auto gameOverHandler = [=](const QString& str) {
+    QGridLayout* mainLayout      = new QGridLayout;
+    static auto  gameOverHandler = [=](const QString& str) {
         QMessageBox msgBox;
         msgBox.setWindowTitle("");
         msgBox.setText(QString("%1 想要再来一局吗？").arg(str));
@@ -35,15 +31,16 @@ MainWindow::MainWindow(GameType type, QWidget* parent) : ShadowWidget<QMainWindo
             initGame();
         }
         else if (ret == QMessageBox::No) {
+            close();
             emit showInitialForm();
         }
     };
 
     // init main layout
-    playerA = new AvatarWidget(this, AvatarWidget::Left, QImage(":/imgs/R-C.jpg"), "Player A", defaultTotalTime,
-                         defaultSingleTime);
+    playerA = new AvatarWidget(this, AvatarWidget::Left, QImage(":/imgs/R-C.jpg"), "Player A",
+                               defaultTotalTime, defaultSingleTime);
     playerB = new AvatarWidget(this, AvatarWidget::Right, QImage(":/imgs/R-C.jpg"), "Player B",
-                         defaultTotalTime, defaultSingleTime);
+                               defaultTotalTime, defaultSingleTime);
 
     if (type == GameType::PVE)
         playerB->setName("Robot");
@@ -113,3 +110,20 @@ void MainWindow::initGame() {
     playerB->init();
     chessBoard->initGame();
 }
+
+Q_GLOBAL_STATIC(MainWindowFactory, singletonInstance);
+
+MainWindowFactory::MainWindowFactory(QObject *parent) : QObject(parent) {
+//  QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
+}
+
+void MainWindowFactory::createAndShow(const QString &str) {
+  GameType type = MetaTypes::PVE;
+  if (str == "PVP")
+    type = MetaTypes::PVP;
+  MainWindow* mainWnd = new MainWindow(type);
+  mainWnd->setAttribute(Qt::WA_DeleteOnClose);
+  mainWnd->show();
+}
+
+MainWindowFactory *MainWindowFactory::instance() { return singletonInstance(); }

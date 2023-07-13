@@ -20,7 +20,9 @@ InitialForm::~InitialForm() { delete ui; }
 void InitialForm::showMainWindow(GameType type) {
     MainWindow* mainWnd = new MainWindow(type);
     mainWnd->setAttribute(Qt::WA_DeleteOnClose);
-    connect(mainWnd, &MainWindow::showInitialForm, this, [=] { show(); });
+    connect(mainWnd, &MainWindow::showInitialForm, this, [=] {
+        show();
+    });
     mainWnd->show();
     hide();
 }

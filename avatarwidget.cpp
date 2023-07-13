@@ -1,19 +1,23 @@
 #include "avatarwidget.h"
 #include <QGridLayout>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
+#include <QParallelAnimationGroup>
+#include <QSequentialAnimationGroup>
 #include <QStyle>
-#include <QQuickWidget>
 
 AvatarWidget::AvatarWidget(QWidget* parent, LabelPosition pos, const QImage& img,
                            const QString& name, QTime totalTime, size_t singleTime)
     : QWidget(parent), totalTime(totalTime), leftTime(totalTime), currentTime(singleTime),
       singleTime(singleTime), avatarImage(img), currentAvatar(img) {
-    // init form
-    int labelPosCol = pos == LabelPosition::Left ? 0 : 1;  // 0 for left
+    // init data
+    setMouseTracking(true);
 
-    QGridLayout* layout = new QGridLayout;
-    avatar              = new QWidget;
+    // init form
+    int          labelPosCol = pos == LabelPosition::Left ? 0 : 1;  // 0 for left
+    QGridLayout* layout      = new QGridLayout;
+    avatar                   = new QWidget;
     avatar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     layout->addWidget(avatar, 0, 1 - labelPosCol, 2, 1);
     lblName = new QLabel(name);
@@ -23,7 +27,7 @@ AvatarWidget::AvatarWidget(QWidget* parent, LabelPosition pos, const QImage& img
     lblLeftTime->setStyleSheet("QLabel {"
                                "border-radius:2px;"
                                "letter-spacing:1px;"
-                               "padding:-1px 2px -1px 2px;"
+                               "padding:-1px 3px -1px 3px;"
                                "}"
                                "QLabel[isActive=\"false\"] {"
                                "background-color:#E9ECEF;"
@@ -61,23 +65,34 @@ AvatarWidget::AvatarWidget(QWidget* parent, LabelPosition pos, const QImage& img
 
     // init color animation of progress bar
     setProperty("progressBarColor", QColor());
-    progressBarColorAnim = new QPropertyAnimation(this, "progressBarColor");
-    progressBarColorAnim->setKeyValues({ { 0.0, QColor(0x18BC9C) },
-                                         { 0.4, QColor(0x18BC9C) },
-                                         { 0.6, QColor(0xF7A215) },
-                                         { 0.9, QColor(0xDC3545) },
-                                         { 1.0, QColor(0xDC3545) } });
+    QPropertyAnimation* progOpacityAnim = new QPropertyAnimation(this, "progressBarColor");
+    progOpacityAnim->setKeyValues(
+        { { 0.0, QColor(0x18, 0xBC, 0x9C, 0) }, { 1.0, QColor(0x18BC9C) } });
+    progOpacityAnim->setDuration(200);
+    QPropertyAnimation* progColorAnim = new QPropertyAnimation(this, "progressBarColor");
+    progColorAnim->setKeyValues({ { 0.0, QColor(0x18BC9C) },
+                                  { 0.4, QColor(0x18BC9C) },
+                                  { 0.6, QColor(0xF7A215) },
+                                  { 0.9, QColor(0xDC3545) },
+                                  { 1.0, QColor(0xDC3545) } });
+    progColorAnim->setDuration(singleTime - progOpacityAnim->duration());
+    progressBarColorAnim = new QSequentialAnimationGroup(this);
+    progressBarColorAnim->addAnimation(progOpacityAnim);
+    progressBarColorAnim->addAnimation(progColorAnim);
 
-    progressBarColorAnim->setDuration(singleTime);
+    fadeAnim = new QPropertyAnimation(this, "progressBarColor");
+    fadeAnim->setDirection(QAbstractAnimation::Backward);
+    fadeAnim->setKeyValues(progOpacityAnim->keyValues());
+    fadeAnim->setDuration(progOpacityAnim->duration());
+    connect(fadeAnim, &QPropertyAnimation::valueChanged, this, [=] { update(); });
 
     // init color animation of avatar blink
     setProperty("avatarBlinkColor", QColor());
     avatarBlinkAnim = new QPropertyAnimation(this, "avatarBlinkColor");
-    avatarBlinkAnim->setStartValue(QColor(Qt::transparent));
-    avatarBlinkAnim->setKeyValueAt(0.5, QColor(0xDC3545));
-    avatarBlinkAnim->setEndValue(QColor(Qt::transparent));
-
-    avatarBlinkAnim->setDuration(600);
+    avatarBlinkAnim->setKeyValues({ { 0.0, QColor(0xDC, 0x35, 0x45, 0) },
+                                    { 0.5, QColor(0xDC3545) },
+                                    { 1.0, QColor(0xDC, 0x35, 0x45, 0) } });
+    avatarBlinkAnim->setDuration(700);
     avatarBlinkAnim->setLoopCount(-1);
 }
 
@@ -96,7 +111,10 @@ void AvatarWidget::init() {
 }
 
 void AvatarWidget::startTimer() {
+    if (isActive())
+        return;
     timer.start();
+    currentTime = singleTime;
     lblLeftTime->setProperty("isActive", true);
     lblLeftTime->style()->unpolish(lblLeftTime);
     lblLeftTime->style()->polish(lblLeftTime);
@@ -104,14 +122,16 @@ void AvatarWidget::startTimer() {
 }
 
 void AvatarWidget::stopTimer() {
-    progress = 1;
-    timer.stop();
-    avatarBlinkAnim->stop();
-    progressBarColorAnim->stop();
-    lblLeftTime->setProperty("isActive", false);
-    lblLeftTime->style()->unpolish(lblLeftTime);
-    lblLeftTime->style()->polish(lblLeftTime);
-    update();
+    if (isActive()) {
+        progress = 1;
+        timer.stop();
+        avatarBlinkAnim->stop();
+        progressBarColorAnim->stop();
+        lblLeftTime->setProperty("isActive", false);
+        lblLeftTime->style()->unpolish(lblLeftTime);
+        lblLeftTime->style()->polish(lblLeftTime);
+        fadeAnim->start();
+    }
 }
 
 void AvatarWidget::setAvatar(AvatarType type) {
@@ -144,28 +164,25 @@ void AvatarWidget::paintEvent(QPaintEvent* event) {
     // draw avatar
     p.setRenderHint(QPainter::Antialiasing, true);
     p.translate(avatar->pos());
-    QRect drawRect = avatar->rect();
-    int   radius   = qMin(avatar->rect().width(), avatar->rect().height());
-    drawRect.setSize(QSize(radius, radius));
+    int   diameter = qMin(avatar->rect().width(), avatar->rect().height());
+    QRect drawRect(0, 0, diameter, diameter),
+        imageRect(0, 0, diameter - progressBarWidth, diameter - progressBarWidth);
     drawRect.moveCenter(avatar->rect().center());
-    QRect imageRect = drawRect;
-    imageRect.setSize(
-        QSize(drawRect.width() - progressBarWidth, drawRect.height() - progressBarWidth));
     imageRect.moveCenter(drawRect.center());
+
     QRegion      imageRegion(imageRect, QRegion::Ellipse);
     QPainterPath clipPath;
     clipPath.addEllipse(imageRect);
     p.setClipPath(clipPath);
     p.drawImage(imageRect, currentAvatar);
     p.setClipping(false);
-    if (timer.isActive()) {
+    if (timer.isActive() || fadeAnim->state() == QAbstractAnimation::Running) {
         QPainterPath outterCircle;
         outterCircle.addRegion(QRegion(drawRect, QRegion::Ellipse).subtracted(imageRegion));
         p.fillPath(outterCircle, Qt::white);
-        int angle = progress * 360;
         p.setBrush(property("progressBarColor").value<QColor>());
-        p.setPen(Qt::NoPen);
-        if (angle > 0) {
+        p.setPen(p.brush().color());
+        if (int angle = progress * 360; angle > 0) {
             QPainterPath arcPath;
             arcPath.moveTo(drawRect.center());
             arcPath.arcTo(drawRect, 90, angle);
@@ -178,6 +195,7 @@ void AvatarWidget::paintEvent(QPaintEvent* event) {
         }
 
         if (avatarBlinkAnim->state() == QAbstractAnimation::Running) {
+            p.setPen(Qt::NoPen);
             p.setBrush(property("avatarBlinkColor").value<QColor>());
             p.drawEllipse(imageRect);
         }

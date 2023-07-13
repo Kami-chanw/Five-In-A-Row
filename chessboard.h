@@ -1,23 +1,31 @@
-
 #ifndef CHESSBOARD_H
 #define CHESSBOARD_H
 
-#include "Game.h"
-#include "Position.h"
+#include "game.h"
+#include "position.h"
 #include <QWidget>
+
+namespace MetaTypes {
+    Q_NAMESPACE
+    enum GameType { PVP, PVE };
+    Q_ENUM_NS(GameType)
+}  // namespace MetaTypes
+using MetaTypes::GameType;
 
 class ChessBoard : public QWidget {
     Q_OBJECT
 public:
     ChessBoard(GameType type, QWidget* parent = nullptr);
-    void paintEvent(QPaintEvent* event);         //绘图
-    void mouseMoveEvent(QMouseEvent* event);     //监测鼠标移动事件
-    void mouseReleaseEvent(QMouseEvent* event);  //监测鼠标释放事件，获取棋子落子位置
+    void paintEvent(QPaintEvent* event);
+    void mouseMoveEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent* event);
 
-    void     initGame();                                        //初始化游戏
-    GameType gameType() const { return game->getGameType(); };  //查询游戏进程状态
+    void initGame();
 
     ~ChessBoard();
+
+    GameType gameType() const;
+    void     setGameType(GameType newCurrGameType);
 
 signals:
     void makeMove();
@@ -25,21 +33,25 @@ signals:
 
 private slots:
 
-    void playOneChess_P();
-    void playOneChess_E();
+    void makePlayerMove();
+    void makeAiMove();
 
 private:
-    Game*                   game = nullptr;  //存储游戏指针
-    Position                clickPos;        //存储鼠标点击的位置坐标
-    std::array<Position, 5> winPos;
+    Game                    game;
+    Position                clickPos;  // click position mapping to chess board
+    GameType                currGameType;
+    std::array<Position, 5> winPos;  // the recent win position for 5 chesses
 
-    static const QColor blackChessColor, whiteChessColor;
-    static const int    cellSize;          // 棋盘网格边长
-    static const int    chessRadius;       // 棋子半径
-    static const int    chessBoardMargin;  // 页面边界距棋盘边缘空隙
-    static const QRect  clickBoundingBox;  // 鼠标点击的判定框大小
-    static const int    markSizeAfterPlay;
-    static const int    aiChessDelay;  // AI下棋前的思考时间
+    static constexpr QColor blackChessColor  = QColor(0x2C, 0x3E, 0x50);
+    static constexpr QColor whiteChessColor  = QColor(0x18, 0xBC, 0x9C);
+    static constexpr int    cellSize         = 32;               // size of each cell in grid
+    static constexpr int    chessRadius      = cellSize * 0.42;  // radius of chesses
+    static constexpr int    chessBoardMargin = 24;  // margin between border and chess board
+    static constexpr QRect  clickBoundingBox =
+        QRect(-ChessBoard::chessRadius, -ChessBoard::chessRadius, ChessBoard::chessRadius * 2 - 1,
+              ChessBoard::chessRadius * 2 - 1);  // bounding box of click
+    static constexpr int markSizeAfterPlay = 4;  // mark size on chess after play
+    static constexpr int aiChessDelay      = 600;
 };
 
 #endif  // CHESSBOARD_H

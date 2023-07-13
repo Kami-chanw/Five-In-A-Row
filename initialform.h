@@ -1,8 +1,8 @@
 #ifndef INITIALFORM_H
 #define INITIALFORM_H
 
-#include "Game.h"
-#include "ShadowWidget.h"
+#include "chessboard.h"
+#include "shadowwidget.h"
 #include <QDialog>
 
 namespace Ui {

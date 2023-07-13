@@ -1,12 +1,9 @@
-#include "Game.h"
+#include "game.h"
 #include <cstdlib>
 #include <ctime>
 #include <functional>
 #include <vector>
-Game::Game(GameType type) {
-    gameType = type;
-    srand(time(0));
-}
+Game::Game() { srand(time(0)); }
 Game::~Game() {}
 
 void Game::startGame() {
@@ -20,14 +17,14 @@ void Game::updateGameMap(Position pos) {
     if (isEmptyAt(pos)) {
         setChessAt(pos, isBlackPlay() ? Piece::Black : Piece::White);
         player = !player;
-        coordinate.push_back(pos);
+        history.push_back(pos);
     }
 }
 
-void Game::act_P(Position pos) { updateGameMap(pos); }
-void Game::act_E() { updateGameMap(getBestChess()); }
+void Game::makePlayerMove(Position pos) { updateGameMap(pos); }
+void Game::makeAiMove() { updateGameMap(getBestChess()); }
 
-Position Game::getLastPos() { return coordinate.back(); }
+Position Game::getLastPos() { return history.back(); }
 
 std::pair<bool, std::array<Position, 5>> Game::isWin() {
     int lastrow = getLastPos().row();
@@ -86,7 +83,7 @@ std::pair<bool, std::array<Position, 5>> Game::isWin() {
 }
 
 bool Game::isDead() {
-    if (coordinate.size() == chessBoardSize * chessBoardSize) {
+    if (history.size() == chessBoardSize * chessBoardSize) {
         gameStatus = Status::Dead;
         return true;
     }

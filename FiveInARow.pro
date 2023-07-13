@@ -1,4 +1,4 @@
-QT       += core gui quickwidgets
+QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -9,10 +9,10 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-#    FiveChess.cpp \
-    Game.cpp \
-    Position.cpp \
-    TitleBar.cpp \
+    game.cpp \
+    position.cpp \
+    titlebar.cpp \
+    ahocorasick.cpp \
     avatarwidget.cpp \
     chessboard.cpp \
     initialform.cpp \
@@ -21,10 +21,11 @@ SOURCES += \
 
 HEADERS += \
 #    FiveChess.h \
-    Game.h \
-    Position.h \
-    ShadowWidget.h \
-    TitleBar.h \
+    game.h \
+    position.h \
+    shadowwidget.h \
+    titlebar.h \
+    ahocorasick.h \
     avatarwidget.h \
     chessboard.h \
     initialform.h \

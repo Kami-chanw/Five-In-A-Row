@@ -10,4 +10,5 @@
         <file>imgs/mainwnd_dead.svg</file>
     </qresource>
     <qresource prefix="/img"/>
+    <qresource prefix="/qml"/>
 </RCC>

@@ -1,7 +1,7 @@
 #ifndef SHADOWWIDGET_H
 #define SHADOWWIDGET_H
 
-#include "TitleBar.h"
+#include "titlebar.h"
 #include <QDialog>
 #include <QMouseEvent>
 #include <QPainter>
@@ -17,6 +17,7 @@
 #endif
 #define CURSOR_HEIGHT 16
 #define CURSOR_WIDTH 16
+
 class QMainWindow;
 template <class Base>
 class ShadowWidget : public Base {
